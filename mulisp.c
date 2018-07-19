@@ -9,7 +9,8 @@ enum token_type {
     T_CLOSE_PAREN,
     T_QUOTE,
     T_CONS,
-    T_IDENTIFIER
+    T_IDENTIFIER,
+    T_STRING
 };
 union token_content { 
     char* str;
@@ -44,12 +45,39 @@ struct token* lex(char* in) {
         current->prev = previous;
         previous->next = current;
         switch(*in) {
-            // handle one character tokens
+            // handle simple one character tokens
             case '(':  current->type = T_OPEN_PAREN;  break;
             case ')':  current->type = T_CLOSE_PAREN; break;
             case '\'': current->type = T_QUOTE;       break;
             case '.':  current->type = T_CONS;        break;
-            default: /*todo: multicharacter tokens*/  break;
+            // handle more complicated one character tokens
+            case '"': current->type = T_STRING;
+                // start out with a length 16 string
+                // if we need more, we realloc
+                unsigned int str_i;
+                unsigned int str_max = 2;
+                char* str = calloc(str_max, sizeof(char));
+                // skip the current '"'
+                in++;
+                // repeat this until we find another '"'
+                while (*in != '"') {
+                    // alloc more string if we went over
+                    if (str_i >= str_max) {
+                        str_max += 1;
+                        str = realloc(str, str_max);
+                    }
+                    if (*in == '\0') {
+                        puts("Unterminated string literal");
+                        exit(-1);
+                    }
+                    str[str_i] = *in;
+                    in++;
+                    str_i++;
+                }
+                break;
+            default: 
+                // start parsing identifiers
+                break;
         }
         // prepare for the next iteration
         in++;
@@ -74,7 +102,7 @@ int main(int argc, char** argv) {
             case T_END: puts("T_END"); break;
             case T_OPEN_PAREN: puts("T_OPEN_PAREN"); break;
             case T_CLOSE_PAREN: puts("T_CLOSE_PAREN"); break;
-            case T_QUOTE: puts("T_QUOTE"); break;
+            case T_QUOTE: puts("T_QUOTE:"); printf("    \"%s\"", tokens->content.str); break;
             case T_CONS: puts("T_CONS"); break;
             case T_IDENTIFIER: puts("T_IDENTIFIER"); break;
         }
