@@ -1,2 +1,2 @@
 all:
-	gcc mulisp.c -o mulisp
+	gcc mulisp.c lex.c -o mulisp
