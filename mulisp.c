@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "lex.h"
+#include "parse.h"
 
 int main(int argc, char** argv) {
     char in[1024];

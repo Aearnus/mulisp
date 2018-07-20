@@ -30,7 +30,7 @@ char* consume_until(char** in, const char* stop) {
 }
 
 int are_all_characters_one_of(char* these, char* in) {
-    for (; in++; *in != '\0') {
+    for (; *in != '\0'; in++) {
         if (!strchr(these, *in)) return 0;
     }
     return 1;
