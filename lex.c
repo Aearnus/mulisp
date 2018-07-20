@@ -26,6 +26,8 @@ char* consume_until(char** in, const char* stop) {
         (*in)++;
         i++;
     }
+    // this function skips past the stop char, so we back up to it
+    (*in)--;
     return str;
 }
 

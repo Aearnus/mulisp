@@ -1,2 +1,2 @@
 all:
-	gcc -Wall parse.c lex.c mulisp.c -o mulisp
+	gcc -g -Wall parse.c lex.c mulisp.c -o mulisp

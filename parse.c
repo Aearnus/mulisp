@@ -12,7 +12,7 @@ struct program parse(struct token* token_list) {
     while (token_list->type != T_END) {
         // first, we see if we're looking at a paren or a literal
         // if we're looking at a starting string just skip it
-        if (token_list->type == T_START) {
+        if (token_list->type == T_BEGIN) {
             token_list = token_list->next;
             continue;
         }
@@ -31,6 +31,7 @@ struct program parse(struct token* token_list) {
                     case T_OPEN_PAREN: paren_depth++; break;
                     case T_CLOSE_PAREN: paren_depth--; break;
                     case T_END: puts ("Unbalanced parens (extra open paren)"); exit(-1); break;
+                    default: break;
                 }
             }
             // now depth_peek has a pointer to the balancing paren
@@ -40,9 +41,11 @@ struct program parse(struct token* token_list) {
             // once we have a struture that's a parsed tree of the inside of those parens,
             // we append it to our current tree
             out.length += 1;
-            out.expressions = realloc(out.expressions, out.length);
+            out.expressions = realloc(out.expressions, out.length * sizeof(struct expression));
             out.expressions[out.length - 1].type = E_EXPRESSION;
             out.expressions[out.length - 1].expression = nested.expressions;
+            //then update token_list to point past that last close paren
+            token_list = depth_peek->next;
         }
         // our parser should seamlessly skip over all close parens
         // if we hit one, there's a syntax error (someone included too many close parens)
@@ -53,7 +56,7 @@ struct program parse(struct token* token_list) {
         // if we're looking at anything else, itll be parsed as a normal token and appended to out.expressions
         else {
             out.length += 1;
-            out.expressions = realloc(out.expressions, out.length);
+            out.expressions = realloc(out.expressions, out.length * sizeof(struct expression));
             out.expressions[out.length - 1].type = E_TOKEN;
             out.expressions[out.length - 1].token = token_list;
             token_list = token_list->next;

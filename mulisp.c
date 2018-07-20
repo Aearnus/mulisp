@@ -8,8 +8,9 @@
 int main(int argc, char** argv) {
     char in[1024];
     fgets(in, 1024, stdin);
-    struct token* tokens = lex(in);
+    struct token* lexed = lex(in);
     // iterate through the lexxed list
+    struct token* tokens = lexed;
     while (1) {
         switch(tokens->type) {
             case T_BEGIN: puts("T_BEGIN"); break;
@@ -26,4 +27,6 @@ int main(int argc, char** argv) {
         if (tokens->type == T_END) break;
         tokens = tokens->next;
     }
+    struct program parsed = parse(lexed);
+    // iterate through the AST
 }
