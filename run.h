@@ -1,16 +1,30 @@
 struct variable {
     char* name;
-    struct expression* definition; 
+    struct expression* value; 
 };
 struct variable_table {
     long long length;
     struct variable* table;
 };
 
+typedef (struct expression*)(*native_lisp_function)(struct scope, struct expression*);
+struct function {
+    char* name;
+    int is_c_function;
+    // if is_c_function
+    native_lisp_function function;
+    // else
+    struct expression* definition; 
+};
+struct function_table {
+    long long length;
+    struct function* table;
+};
+
 struct scope {
     struct variable_table* variables;
-    struct variable_table* functions;
-    struct variable_table* macros;
+    struct function_table* functions;
+    struct function_table* macros;
 };
 
 void run(struct program ast);
