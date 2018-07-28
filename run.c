@@ -1,20 +1,23 @@
 #include "run.h"
 
-// these 4 functions return a null pointer if they can't find the variable/function/macro
-struct variable* findintable(struct variable_table* table, char* name) {
-    for (long long i; i < table->length; i++) {
-        if (!strcmp(table[i].name, name)) return &(table[i]);
+// these 3 functions return a null pointer if they can't find the variable/function/macro
+struct variable* findvariable(struct scope scope, char* name) {
+    for (long long i; i < scope.variables->length; i++) {
+        if (!strcmp(scope.variables[i].name, name)) return &(scope.variables[i]);
     }
     return NULL;
 }
-struct variable* findvariable(struct scope scope, char* name) {
-    return findintable(scope.variables, name);
+struct function* findfunction(struct scope scope, char* name) {
+    for (long long i; i < scope.functions->length; i++) {
+        if (!strcmp(scope.functions[i].name, name)) return &(scope.functions[i]);
+    }
+    return NULL;
 }
-struct variable* findfunction(struct scope scope, char* name) {
-    return findintable(scope.functions, name);
-}
-struct variable* findmacro(struct scope scope, char* name) {
-    return findintable(scope.macros, name);
+struct function* findmacro(struct scope scope, char* name) {
+    for (long long i; i < scope.macros->length; i++) {
+        if (!strcmp(scope.macros[i].name, name)) return &(scope.macros[i]);
+    }
+    return NULL;
 }
 
 void runexpression(struct expression expr, struct scope current_scope) {
@@ -29,12 +32,20 @@ void runexpression(struct expression expr, struct scope current_scope) {
     if (expr.length < 1) puts("Tried to execute an empty list"); exit(-1); break;
     // if it's not empty, take the first element of the list as a 1) macro or 2) function
     char* run_name = expr.expression[0].name;
-    struct variable* run_var;
+    struct function* run_var;
     if (run_var = findmacro(current_scope, run_name)) {
-        // TODO
+        if (run_var.is_c_function) {
+            // TODO
+        } else {
+            // TODO
+        }
     } 
     else if (run_var = findfunction(current_scope, run_name)) {
-        // TODO
+        if (run_var.is_c_function) {
+            // TODO
+        } else {
+            // TODO
+        }
     }
     else {
         printf("Unrecognized function `%s'", run_name);

@@ -7,9 +7,10 @@ struct variable_table {
     struct variable* table;
 };
 
-typedef (struct expression*)(*native_lisp_function)(struct scope, struct expression*);
+typedef (struct expression*)(*native_lisp_function)(struct scope, struct variable_table);
 struct function {
     char* name;
+    variable_table arguments;
     int is_c_function;
     // if is_c_function
     native_lisp_function function;
